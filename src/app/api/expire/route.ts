@@ -4,40 +4,31 @@ import { NextRequest, NextResponse } from 'next/server';
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
-  const { reference } = await request.json();
-
   try {
+    const { reference } = await request.json();
+
+    // Find the reservation based on the reference
     const reservation = await prisma.reservation.findFirst({
-      where: { reference: reference },
+      where: { reference },
     });
 
     if (!reservation) {
-      return NextResponse.json({ error: `Order with reference ${reference} not found` }, { status: 404 });
+      return NextResponse.json({ error: `Reservation with reference ${reference} not found` }, { status: 404 });
     }
 
-    const stockItem = await prisma.stockItem.findFirst({
+    // Update stock item to be available again
+    await prisma.stockItem.updateMany({
       where: { token_id: reservation.token_id },
-    });
-
-    await prisma.stockItem.update({
-      where: { id: stockItem?.id, token_id: reservation.token_id },
       data: { available: true },
     });
 
+    // Delete the reservation
     await prisma.reservation.delete({
       where: { id: reservation.id },
     });
 
     return NextResponse.json({ status: 'success' });
   } catch (error) {
-    // Type casting error to Error
-    if (error instanceof Error) {
-      console.error(error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    } else {
-      // Fallback if error isn't of type Error
-      console.error('Unknown error', error);
-      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
-    }
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

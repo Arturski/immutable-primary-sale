@@ -6,7 +6,7 @@ const API_KEY = 'your_hardcoded_api_key'; // Replace with the actual API key
 const testEndToEndFlow = async () => {
   try {
     // Step 1: Get Quote
-    const quoteResponse = await axios.post(`${API_URL}/quote`, {
+    const quoteResponse = await axios.post(`${API_URL}/api/quote`, {
       recipient_address: '0xdd9AAE1C317eE6EFEb0F3DB0A068e9Ed952a6CEB',
       products: [
         {
@@ -24,7 +24,7 @@ const testEndToEndFlow = async () => {
     console.log('Quote Response:', quoteResponse.data);
 
     // Step 2: Request Authorization
-    const authorizeResponse = await axios.post(`${API_URL}/authorize`, {
+    const authorizeResponse = await axios.post(`${API_URL}/api/authorize`, {
       recipient_address: '0xdd9AAE1C317eE6EFEb0F3DB0A068e9Ed952a6CEB',
       currency: 'USDC',
       products: [
@@ -45,7 +45,7 @@ const testEndToEndFlow = async () => {
     const reference = authorizeResponse.data.reference;
 
     // Step 3: Confirm the Sale
-    const confirmResponse = await axios.post(`${API_URL}/confirm`, {
+    const confirmResponse = await axios.post(`${API_URL}/api/confirm`, {
       reference: reference,
       tx_hash: '0x123456',
       token_id_hash: 'b7d016666d769',
