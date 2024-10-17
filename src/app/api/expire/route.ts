@@ -1,4 +1,3 @@
-// src/app/api/expire/route.ts
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -31,7 +30,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ status: 'success' });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Type casting error to Error
+    if (error instanceof Error) {
+      console.error(error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    } else {
+      // Fallback if error isn't of type Error
+      console.error('Unknown error', error);
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+    }
   }
 }

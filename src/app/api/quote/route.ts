@@ -1,35 +1,36 @@
 // src/app/api/quote/route.ts
-import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { QuoteResponse, ProductResponse, Pricing } from '@/types'; // Assuming these are defined in src/types
+
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
-  const { products } = await req.json();
-
+export async function POST(request: NextRequest) {
   try {
-    const response = {
+    // Parse the request body
+    const { products } = await request.json();
+
+    // Define the response and currency totals with explicit types
+    const response: QuoteResponse = {
       products: [],
       totals: [],
     };
 
-    const currencyTotals: { [key: string]: any } = {};
+    const currencyTotals: { [currency: string]: Pricing } = {}; // Define the type for currencyTotals
 
     for (const product of products) {
       const { product_id, quantity } = product;
 
-      // Fetch product pricing from the database
       const productData = await prisma.product.findUnique({
         where: { id: parseInt(product_id.toString()) },
-        include: {
-          pricing: true,
-        },
+        include: { pricing: true },
       });
 
       if (!productData) {
         return NextResponse.json({ error: `Product with ID ${product_id} not found` }, { status: 404 });
       }
 
-      const productResponse: any = {
+      const productResponse: ProductResponse = {
         product_id: product_id,
         quantity: quantity,
         pricing: [],
@@ -57,14 +58,14 @@ export async function POST(req: Request) {
         currencyTotals[price.currency].amount += totalAmount;
       }
 
-      response.products.push(productResponse);
+      response.products.push(productResponse); // This now works because of the proper typing
     }
 
     response.totals = Object.values(currencyTotals);
 
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json(response);
   } catch (error) {
-    console.error("Error fetching product quote:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error('Error fetching product quote:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
