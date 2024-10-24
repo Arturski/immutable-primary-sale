@@ -1,7 +1,7 @@
 // src/app/page.tsx
 "use client"; // <-- Add this at the very top of the file
 
-import { Flex, Heading, HStack, SimpleGrid, Spinner, useToast } from '@chakra-ui/react';
+import { Flex, Heading, SimpleGrid, Spinner, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AppHeaderBar } from './components/AppHeaderBar/AppHeaderBar';
 import { EIP1193ContextProvider } from './contexts/EIP1193Context';
@@ -37,6 +37,7 @@ const advancedProductsMock = [
 
 
 export default function Home() {
+  const {primarySaleBackendUrl, hubEnvironmentId} = config[applicationEnvironment];
   const [isSimplifiedSale, setIsSimplifiedSale] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +52,7 @@ export default function Home() {
         let storefrontProducts = []
         if(isSimplifiedSale) {
           storefrontProducts = await (
-            await fetch(`${config[applicationEnvironment].primarySaleBackendUrl}/products`)
+            await fetch(`${primarySaleBackendUrl}/${hubEnvironmentId}/products`)
           ).json();
           console.log(storefrontProducts)
         } else {
