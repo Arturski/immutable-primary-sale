@@ -20,7 +20,7 @@ export interface EnvironmentConfig {
 export interface QuoteRequest {
   recipient_address: string;
   products: {
-    product_id: number;
+    product_id: string;
     quantity: number;
   }[];
 }
@@ -33,7 +33,7 @@ export interface Pricing {
 }
 
 export interface ProductResponse {
-  product_id: number;
+  product_id: string;
   quantity: number;
   pricing: Pricing[];
 }
@@ -48,7 +48,7 @@ export interface AuthorizeRequest {
   recipient_address: string;
   currency: string;
   products: {
-    product_id: number;
+    product_id: string;
     quantity: number;
   }[];
 }
@@ -59,7 +59,7 @@ export interface AuthorizeProductDetail {
 }
 
 export interface AuthorizeProductResponse {
-  product_id: number;
+  product_id: string;
   collection_address: string;
   contract_type: string;
   detail: AuthorizeProductDetail[];

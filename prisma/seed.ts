@@ -1,98 +1,73 @@
-// prisma/seed.ts
-
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+import 'dotenv/config'
 
 const prisma = new PrismaClient();
 
+// For this seed script, we will create a few products and currencies
+// that we will use to demonstrate the API functionality
+
+// This is a fake collection address. In a real scenario, this would be the address of the product's collection address.
+const collectionAddress = '0x979013fa9be5acc6d31bf0c067c9677e9ea12864';
+
 async function main() {
-  // Create the uncommon product
-  const uncommon = await prisma.product.create({
-    data: {
-      name: 'Farmer Fin',
-      description: 'Harvest the victory! Dive into the rural rumble with Farmer Fin, the toughest shark in the pasture!',
-      rarity: 'uncommon',
-      contract_address: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
-      metadata_id: 'none',
-      pricing: {
-        create: [
-          {
-            currency: 'BGT',
-            currency_type: 'crypto',
-            currency_address: '0x1303F139FEac224ff877e6071C782A41C30F3255',
-            amount: 5,
-          },
-        ],
-      },
-    },
-  });
+    const bgt = await prisma.currency.upsert({
+        where: { name: 'ETH' },
+        update: {},
+        create: {
+            name: 'ETH',
+            type: 'crypto'
+        }
+    });
 
-  // Create the rare product
-  const rare = await prisma.product.create({
-    data: {
-      name: 'Sergeant Splash',
-      description: 'Lock, load, and launch! Join Sergeant Splash, the elite of the ocean, on his city safeguarding missions!',
-      rarity: 'legendary',
-      contract_address: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
-      metadata_id: 'none',
-      pricing: {
-        create: [
-          {
-            currency: 'BGT',
-            currency_type: 'crypto',
-            currency_address: '0x1303F139FEac224ff877e6071C782A41C30F3255',
-            amount: 10,
-          },
-        ],
-      },
-    },
-  });
+    const productId1 = 'vi7age4ku18qynwbk4wx90ge';
 
-  // Create the legendary product
-  const legendary = await prisma.product.create({
-    data: {
-      name: 'Cybershark',
-      description: 'Metal, might, and megabytes! Gear up with Cybershark, the future of underwater warfare!',
-      rarity: 'legendary',
-      contract_address: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
-      metadata_id: 'none',
-      pricing: {
-        create: [
-          {
-            currency: 'BGT',
-            currency_type: 'crypto',
-            currency_address: '0x1303F139FEac224ff877e6071C782A41C30F3255',
-            amount: 15,
-          },
-        ],
-      },
-    },
-  });
+    await prisma.product.upsert({
+        where: { id: productId1 },
+        update: {},
+        create: {
+            id: productId1,
+            collectionAddress: collectionAddress,
+            contractType: 'ERC721',
+            stockQuantity: 5000,
+            productPrices: {
+                create: [
+                    {
+                        currency_name: bgt.name,
+                        amount: 1
+                    }
+                ]
+            }
+        }
+    })
 
-  // Function to add stock items for a product
-  const addStockItems = async (productId: number, tokenIdStart: number, tokenIdEnd: number) => {
-    for (let tokenId = tokenIdStart; tokenId <= tokenIdEnd; tokenId++) {
-      await prisma.stockItem.create({
-        data: {
-          product_id: productId,
-          token_id: tokenId.toString(),
-        },
-      });
-    }
-  };
+    const productId2 = 'jtwrclpj0v1zab865ne893hb';
 
-  // Add stock items for each product
-  await addStockItems(uncommon.id, 1, 2000);
-  await addStockItems(rare.id, 2001, 3000);
-  await addStockItems(legendary.id, 3001, 3500);
-
-  console.log('Seeded products and stock items.');
+    await prisma.product.upsert({
+        where: { id: productId2 },
+        update: {},
+        create: {
+            id: productId2,
+            collectionAddress: collectionAddress,
+            contractType: 'ERC721',
+            stockQuantity: 50,
+            productPrices: {
+                create: [
+                    {
+                        currency_name: bgt.name,
+                        amount: 1
+                    },
+                ]
+            }
+        }
+    })
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+    .then(async () => {
+        await prisma.$disconnect()
+    })
+    .catch(async (e) => {
+        console.error(e)
+        await prisma.$disconnect()
+        process.exit(1)
+    })

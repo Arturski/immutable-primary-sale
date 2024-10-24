@@ -4,49 +4,43 @@ import { NextRequest, NextResponse } from 'next/server';
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
-  const { reference, tx_hash, token_id_hash, recipient_address, order } = await request.json();
+  const { reference, tx_hash } = await request.json();
 
   try {
-    const reservation = await prisma.reservation.findFirst({
-      where: { reference: reference },
+    // Find the order using the reference (id)
+    const order = await prisma.order.findUnique({
+      where: { id: reference },
     });
 
-    if (!reservation) {
-      return NextResponse.json({ error: `Order with reference ${reference} not found` }, { status: 404 });
+    if (!order) {
+      return NextResponse.json({ message: `Order with reference ${reference} not found` }, { status: 404 });
     }
 
-    // Create confirmation entry
-    await prisma.confirmation.create({
+    // Check if the order status is 'reserved' before completing
+    if (order.status !== 'reserved') {
+      return NextResponse.json({ message: `Order with reference ${reference} is not in a reserved state` }, { status: 400 });
+    }
+
+    // Update the order status to 'completed' and store the transaction hash
+    await prisma.order.update({
+      where: { id: reference },
       data: {
-        reference: reference,
-        tx_hash: tx_hash,
-        token_id_hash: token_id_hash,
-        recipient_address: recipient_address,
-        contract_address: order.contract_address,
-        total_amount: order.total_amount,
-        deadline: order.deadline,
-        created_at: order.created_at,
-        currency: order.currency,
-        product_id: reservation.product_id,
-        token_id: reservation.token_id,
+        status: 'completed', // Set order status to completed as a string
+        transactionHash: tx_hash, // Store the transaction hash
       },
     });
 
-    // Delete reservation
-    await prisma.reservation.delete({
-      where: { id: reservation.id },
-    });
-
-    return NextResponse.json({ status: 'success' });
+    return NextResponse.json(null, { status: 200 });
   } catch (error) {
-    // Type casting error to Error
+    console.error('Error confirming order:', error);
+
+    // Handle and return the error
     if (error instanceof Error) {
-      console.error(error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ message: error.message }, { status: 500 });
     } else {
-      // Fallback if error isn't of type Error
-      console.error('Unknown error', error);
-      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+      return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
     }
+  } finally {
+    await prisma.$disconnect(); // Ensure Prisma client is disconnected
   }
 }

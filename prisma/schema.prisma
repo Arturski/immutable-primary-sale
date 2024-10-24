@@ -1,71 +1,56 @@
-// prisma/schema.prisma
+// This is your Prisma schema file for SQLite
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
-}
-
-// Should be adjusted for desired product data available in the store
 model Product {
-  id              Int            @id @default(autoincrement())
-  name            String
-  description     String
-  rarity          String
-  contract_address String
-  metadata_id     String
-  pricing         Pricing[]
-  stockItems      StockItem[]
-  reservations    Reservation[]
-  confirmations   Confirmation[]
+  id                String          @id @default(cuid())
+  productPrices     ProductPrice[]
+  collectionAddress String
+  contractType      String
+  stockQuantity     Int
+  orders            OrderLineItem[]
 }
 
-model Pricing {
-  id            Int      @id @default(autoincrement())
-  product_id    Int
-  currency      String
-  currency_type String
-  currency_address String?
+model Currency {
+  name          String         @id
+  type          String // Replaced enum with String
+  productPrices ProductPrice[]
+}
+
+model ProductPrice {
+  product       Product  @relation(fields: [product_id], references: [id])
+  product_id    String
+  currency      Currency @relation(fields: [currency_name], references: [name])
+  currency_name String
   amount        Float
-  Product       Product  @relation(fields: [product_id], references: [id])
+
+  @@id([product_id, currency_name])
 }
 
-model StockItem {
-  id                   Int      @id @default(autoincrement())
-  product_id           Int
-  token_id             String
-  available            Boolean  @default(true)
-  Product              Product  @relation(fields: [product_id], references: [id])
+model Order {
+  id               String          @id @default(cuid())
+  status           String // Replaced enum with String
+  lineItems        OrderLineItem[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  transactionHash  String?
+  recipientAddress String
 }
 
-model Reservation {
-  id                Int      @id @default(autoincrement())
-  reference         String
-  product_id        Int
-  token_id          String
-  recipient_address String
-  quantity          Int
-  currency          String
-  expires_at        DateTime
-  Product           Product  @relation(fields: [product_id], references: [id])
-}
+model OrderLineItem {
+  order_id   String
+  product_id String
+  quantity   Int
+  order      Order   @relation(fields: [order_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
 
-model Confirmation {
-  id                Int      @id @default(autoincrement())
-  reference         String
-  tx_hash           String
-  token_id_hash     String
-  recipient_address String
-  contract_address  String
-  total_amount      Float
-  deadline          BigInt
-  created_at        BigInt
-  currency          String
-  product_id        Int
-  token_id          String
-  Product           Product  @relation(fields: [product_id], references: [id])
+  @@id([order_id, product_id])
 }

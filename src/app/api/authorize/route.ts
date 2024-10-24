@@ -1,87 +1,107 @@
-// src/app/api/authorize/route.ts
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import serverConfig, { environment } from '@/config'; // Import server config based on the environment
-import { AuthorizeRequest, AuthorizeResponse, AuthorizeProductResponse } from '@/types'; // Import necessary types
+import { AuthorizeRequest, AuthorizeResponse } from '@/types'; // Import necessary types
+import { ApiError } from '@/errors';
 
 const prisma = new PrismaClient();
+
+const createOrder = async (recipientAddress: string, orderProducts: any[]) => {
+  return await prisma.$transaction(async (tx: PrismaClient) => { // Add type for 'tx'
+    const updatedProducts = [];
+
+    for (const orderProduct of orderProducts) {
+      const updatedProduct = await tx.product.update({
+        where: { id: orderProduct.product_id },
+        data: {
+          stockQuantity: { decrement: orderProduct.quantity }
+        },
+        include: {
+          productPrices: true
+        }
+      });
+
+      // If stock is insufficient, throw an error
+      if (updatedProduct.stockQuantity < 0) {
+        throw new ApiError(400, `Product with id ${orderProduct.product_id} has insufficient stock for this order`);
+      }
+
+      updatedProducts.push(updatedProduct);
+    }
+
+    // Create an order with 'reserved' status and associated line items
+    const order = await tx.order.create({
+      data: {
+        status: 'reserved', // Use the string 'reserved' directly or import the OrderStatus enum
+        recipientAddress: recipientAddress,
+        lineItems: {
+          create: updatedProducts.map((product) => ({
+            product_id: product.id,
+            quantity: orderProducts.find((orderProduct) => orderProduct.product_id === product.id)?.quantity ?? 0
+          }))
+        }
+      },
+      include: {
+        lineItems: {
+          include: {
+            product: {
+              include: {
+                productPrices: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return order;
+  });
+};
+
 
 export async function POST(request: NextRequest) {
   try {
     // Parse the request body with the appropriate type
     const { recipient_address, currency, products }: AuthorizeRequest = await request.json();
 
-    // Fetch the reservation time from the config based on the current environment
-    const reservationTimeMs = parseInt(serverConfig[environment].RESERVATION_TIME) || 300000;
+    // Create order and reserve stock
+    const order = await createOrder(recipient_address, products);
 
-    // Generate a reference for the order
-    const response: AuthorizeResponse = {
-      reference: `O${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`,
-      currency: currency,
-      products: [],
+    // Helper function to populate token details
+    const populateDetails = (amount: number, lineItem: any) => {
+      const details = [];
+      for (let i = 0; i < lineItem.quantity; i++) {
+        details.push({
+          token_id: String(Math.floor(Math.random() * 10000000000)), // Random token_id, adjust based on your logic
+          amount
+        });
+      }
+      return details;
     };
 
-    // Calculate the reservation expiration time
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + reservationTimeMs);
-
-    // Start the transaction for reservation
-    await prisma.$transaction(async (prisma) => {
-      for (const product of products) {
-        const { product_id, quantity } = product;
-
-        // Find available stock items
-        const availableStockItems = await prisma.stockItem.findMany({
-          where: { product_id: parseInt(product_id.toString()), available: true },
-          include: { Product: true },
-          take: quantity,
-        });
-
-        // If not enough stock items are found
-        if (availableStockItems.length < quantity) {
-          throw new Error(`Not enough stock for product ID ${product_id}`);
+    // Prepare the response
+    const response: AuthorizeResponse = {
+      reference: order.id,
+      currency,
+      products: order.lineItems.map((lineItem: any) => {
+        const pricing = lineItem.product.productPrices.find((productPrice: any) => productPrice.currency_name === currency);
+        if (!pricing) {
+          throw new ApiError(404, `Product with id ${lineItem.product_id} does not have pricing for currency ${currency}`);
         }
 
-        for (const stockItem of availableStockItems) {
-          const productResponse: AuthorizeProductResponse = {
-            product_id: product_id,
-            collection_address: stockItem.Product.contract_address,
-            contract_type: 'ERC721', // assuming ERC721 here
-            detail: [{ token_id: stockItem.token_id, amount: 1 }],
-          };
+        return {
+          product_id: lineItem.product_id,
+          collection_address: lineItem.product.collectionAddress,
+          contract_type: lineItem.product.contractType,
+          detail: populateDetails(pricing.amount, lineItem)
+        };
+      })
+    };
 
-          // Create a reservation
-          await prisma.reservation.create({
-            data: {
-              reference: response.reference,
-              product_id: parseInt(product_id.toString()),
-              token_id: stockItem.token_id,
-              currency: currency,
-              recipient_address: recipient_address,
-              expires_at: expiresAt,
-              quantity: 1,
-            },
-          });
-
-          // Update stock item to mark it as unavailable
-          await prisma.stockItem.update({
-            where: { id: stockItem.id },
-            data: { available: false },
-          });
-
-          // Add product response to the response array
-          response.products.push(productResponse);
-        }
-      }
-    });
-
-    // Return the response with the order details
     return NextResponse.json(response);
-
   } catch (error: any) {
     console.error('Error processing authorization:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   } finally {
-    await prisma.$disconnect(); // Ensure Prisma client is disconnected
+    await prisma.$disconnect();
   }
 }

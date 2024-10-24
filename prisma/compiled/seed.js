@@ -1,5 +1,4 @@
 "use strict";
-// prisma/seed.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -38,129 +37,94 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
+require("dotenv/config");
 var prisma = new client_1.PrismaClient();
+// For this seed script, we will create a few products and currencies
+// that we will use to demonstrate the API functionality
+// This is a fake collection address. In a real scenario, this would be the address of the product's collection address.
+var collectionAddress = '0x809eda0107b274c3904c8fb91c1ee3a2778affb0';
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var uncommon, rare, legendary, addStockItems;
-        var _this = this;
+        var bgt, productId1, productId2;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, prisma.product.create({
-                        data: {
-                            name: 'Farmer Fin',
-                            description: 'Harvest the victory! Dive into the rural rumble with Farmer Fin, the toughest shark in the pasture!',
-                            rarity: 'uncommon',
-                            contract_address: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
-                            metadata_id: 'none',
-                            pricing: {
-                                create: [
-                                    {
-                                        currency: 'BGT',
-                                        currency_type: 'crypto',
-                                        currency_address: '0x1303F139FEac224ff877e6071C782A41C30F3255',
-                                        amount: 5,
-                                    },
-                                ],
-                            },
-                        },
+                case 0: return [4 /*yield*/, prisma.currency.upsert({
+                        where: { name: 'BGT' },
+                        update: {},
+                        create: {
+                            name: 'BGT',
+                            type: 'crypto'
+                        }
                     })];
                 case 1:
-                    uncommon = _a.sent();
-                    return [4 /*yield*/, prisma.product.create({
-                            data: {
-                                name: 'Sergeant Splash',
-                                description: 'Lock, load, and launch! Join Sergeant Splash, the elite of the ocean, on his city safeguarding missions!',
-                                rarity: 'legendary',
-                                contract_address: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
-                                metadata_id: 'none',
-                                pricing: {
+                    bgt = _a.sent();
+                    productId1 = 'vi7age4ku18qynwbk4wx90ge';
+                    return [4 /*yield*/, prisma.product.upsert({
+                            where: { id: productId1 },
+                            update: {},
+                            create: {
+                                id: productId1,
+                                collectionAddress: collectionAddress,
+                                contractType: 'ERC721',
+                                stockQuantity: 5000,
+                                productPrices: {
                                     create: [
                                         {
-                                            currency: 'BGT',
-                                            currency_type: 'crypto',
-                                            currency_address: '0x1303F139FEac224ff877e6071C782A41C30F3255',
-                                            amount: 10,
-                                        },
-                                    ],
-                                },
-                            },
+                                            currency_name: bgt.name,
+                                            amount: 10
+                                        }
+                                    ]
+                                }
+                            }
                         })];
                 case 2:
-                    rare = _a.sent();
-                    return [4 /*yield*/, prisma.product.create({
-                            data: {
-                                name: 'Cybershark',
-                                description: 'Metal, might, and megabytes! Gear up with Cybershark, the future of underwater warfare!',
-                                rarity: 'legendary',
-                                contract_address: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
-                                metadata_id: 'none',
-                                pricing: {
+                    _a.sent();
+                    productId2 = 'jtwrclpj0v1zab865ne893hb';
+                    return [4 /*yield*/, prisma.product.upsert({
+                            where: { id: productId2 },
+                            update: {},
+                            create: {
+                                id: productId2,
+                                collectionAddress: collectionAddress,
+                                contractType: 'ERC721',
+                                stockQuantity: 50,
+                                productPrices: {
                                     create: [
                                         {
-                                            currency: 'BGT',
-                                            currency_type: 'crypto',
-                                            currency_address: '0x1303F139FEac224ff877e6071C782A41C30F3255',
-                                            amount: 15,
+                                            currency_name: bgt.name,
+                                            amount: 20
                                         },
-                                    ],
-                                },
-                            },
+                                    ]
+                                }
+                            }
                         })];
                 case 3:
-                    legendary = _a.sent();
-                    addStockItems = function (productId, tokenIdStart, tokenIdEnd) { return __awaiter(_this, void 0, void 0, function () {
-                        var tokenId;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    tokenId = tokenIdStart;
-                                    _a.label = 1;
-                                case 1:
-                                    if (!(tokenId <= tokenIdEnd)) return [3 /*break*/, 4];
-                                    return [4 /*yield*/, prisma.stockItem.create({
-                                            data: {
-                                                product_id: productId,
-                                                token_id: tokenId.toString(),
-                                            },
-                                        })];
-                                case 2:
-                                    _a.sent();
-                                    _a.label = 3;
-                                case 3:
-                                    tokenId++;
-                                    return [3 /*break*/, 1];
-                                case 4: return [2 /*return*/];
-                            }
-                        });
-                    }); };
-                    // Add stock items for each product
-                    return [4 /*yield*/, addStockItems(uncommon.id, 1, 2000)];
-                case 4:
-                    // Add stock items for each product
                     _a.sent();
-                    return [4 /*yield*/, addStockItems(rare.id, 2001, 3000)];
-                case 5:
-                    _a.sent();
-                    return [4 /*yield*/, addStockItems(legendary.id, 3001, 3500)];
-                case 6:
-                    _a.sent();
-                    console.log('Seeded products and stock items.');
                     return [2 /*return*/];
             }
         });
     });
 }
 main()
-    .catch(function (e) {
-    console.error(e);
-    process.exit(1);
-})
-    .finally(function () { return __awaiter(void 0, void 0, void 0, function () {
+    .then(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, prisma.$disconnect()];
             case 1:
                 _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); })
+    .catch(function (e) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.error(e);
+                return [4 /*yield*/, prisma.$disconnect()];
+            case 1:
+                _a.sent();
+                process.exit(1);
                 return [2 /*return*/];
         }
     });
