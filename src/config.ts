@@ -1,10 +1,9 @@
 import { config } from "@imtbl/sdk";
 import { ServerConfig } from "./types";
-import { Provider } from "@ethersproject/providers";
 
 // Access environment variables using process.env
-export const environment = process.env.NEXT_PUBLIC_ENVIRONMENT === "PRODUCTION" 
-  ? config.Environment.PRODUCTION 
+export const environment = process.env.NEXT_PUBLIC_ENVIRONMENT === "PRODUCTION"
+  ? config.Environment.PRODUCTION
   : config.Environment.SANDBOX;
 
 const serverConfig: ServerConfig = {
