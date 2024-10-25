@@ -39,64 +39,66 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 require("dotenv/config");
 var prisma = new client_1.PrismaClient();
-// For this seed script, we will create a few products and currencies
-// that we will use to demonstrate the API functionality
-// This is a fake collection address. In a real scenario, this would be the address of the product's collection address.
-var collectionAddress = '0x809eda0107b274c3904c8fb91c1ee3a2778affb0';
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var bgt, productId1, productId2;
+        var ethCurrency;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, prisma.currency.upsert({
-                        where: { name: 'BGT' },
+                        where: { name: 'ETH' },
                         update: {},
                         create: {
-                            name: 'BGT',
+                            name: 'ETH',
                             type: 'crypto'
                         }
                     })];
                 case 1:
-                    bgt = _a.sent();
-                    productId1 = 'vi7age4ku18qynwbk4wx90ge';
+                    ethCurrency = _a.sent();
                     return [4 /*yield*/, prisma.product.upsert({
-                            where: { id: productId1 },
+                            where: { id: 'vi7age4ku18qynwbk4wx90ge' },
                             update: {},
                             create: {
-                                id: productId1,
-                                collectionAddress: collectionAddress,
-                                contractType: 'ERC721',
+                                id: 'vi7age4ku18qynwbk4wx90ge',
+                                name: 'Shark',
+                                description: 'Evo Shark NFTs',
+                                image: 'https://zacharycouchman.github.io/bb-example-metadata/tokens/Wil_BBH_HeroIcon_1.webp',
                                 stockQuantity: 5000,
+                                status: 'active',
+                                collectionAddress: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
+                                contractType: 'ERC721',
                                 productPrices: {
                                     create: [
                                         {
-                                            currency_name: bgt.name,
-                                            amount: 10
-                                        }
-                                    ]
-                                }
-                            }
+                                            currency_name: ethCurrency.name,
+                                            amount: 1,
+                                        },
+                                    ],
+                                },
+                            },
                         })];
                 case 2:
                     _a.sent();
-                    productId2 = 'jtwrclpj0v1zab865ne893hb';
                     return [4 /*yield*/, prisma.product.upsert({
-                            where: { id: productId2 },
+                            where: { id: 'jtwrclpj0v1zab865ne893hb' },
                             update: {},
                             create: {
-                                id: productId2,
-                                collectionAddress: collectionAddress,
-                                contractType: 'ERC721',
+                                id: 'jtwrclpj0v1zab865ne893hb',
+                                name: 'Another Product',
+                                description: 'Another NFT skin',
+                                image: 'https://example.com/another-image.webp',
                                 stockQuantity: 50,
+                                status: 'active',
+                                collectionAddress: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
+                                contractType: 'ERC721',
                                 productPrices: {
                                     create: [
                                         {
-                                            currency_name: bgt.name,
-                                            amount: 20
+                                            currency_name: ethCurrency.name,
+                                            amount: 1,
                                         },
-                                    ]
-                                }
-                            }
+                                    ],
+                                },
+                            },
                         })];
                 case 3:
                     _a.sent();

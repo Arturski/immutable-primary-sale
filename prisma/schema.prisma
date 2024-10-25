@@ -1,4 +1,4 @@
-// This is your Prisma schema file for SQLite
+// prisma/schema.prisma
 
 generator client {
   provider      = "prisma-client-js"
@@ -12,17 +12,28 @@ datasource db {
 
 model Product {
   id                String          @id @default(cuid())
-  productPrices     ProductPrice[]
+  name              String
+  description       String
+  image             String
+  stockQuantity     Int
+  status            String
   collectionAddress String
   contractType      String
-  stockQuantity     Int
-  orders            OrderLineItem[]
+  productPrices     ProductPrice[]
+  orderLineItems    OrderLineItem[] // Ensure this matches any relations you need
+
+  @@map("products")
 }
+
+
+
 
 model Currency {
   name          String         @id
-  type          String // Replaced enum with String
+  type          String         // Type of currency (e.g., "crypto")
   productPrices ProductPrice[]
+
+  @@map("currencies")
 }
 
 model ProductPrice {
@@ -33,16 +44,19 @@ model ProductPrice {
   amount        Float
 
   @@id([product_id, currency_name])
+  @@map("product_prices")
 }
 
 model Order {
   id               String          @id @default(cuid())
-  status           String // Replaced enum with String
-  lineItems        OrderLineItem[]
+  status           String          // Order status
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   transactionHash  String?
   recipientAddress String
+  lineItems        OrderLineItem[]
+
+  @@map("orders")
 }
 
 model OrderLineItem {
@@ -53,4 +67,5 @@ model OrderLineItem {
   product    Product @relation(fields: [product_id], references: [id])
 
   @@id([order_id, product_id])
+  @@map("order_line_items")
 }

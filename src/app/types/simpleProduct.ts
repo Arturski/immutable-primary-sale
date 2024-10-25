@@ -1,14 +1,24 @@
-export interface SimpleProduct {
-  collection: Collection;
+interface SimpleProduct {
+  product_id: string;
+  name: string;
   description: string;
   image: string;
-  limits: Limits;
-  name: string;
-  pricing: Pricing[];
-  product_id: string;
   quantity: number;
+  collection: {
+    collection_address: string;
+    collection_type: string;
+  };
+  limits: {
+    enabled: boolean;
+  };
   status: string;
+  pricing: {
+    amount: number;
+    currency: string;
+  }[];
 }
+
+
 
 export interface Collection {
   collection_address: string;

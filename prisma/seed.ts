@@ -1,16 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import 'dotenv/config'
+import 'dotenv/config';
 
 const prisma = new PrismaClient();
 
-// For this seed script, we will create a few products and currencies
-// that we will use to demonstrate the API functionality
-
-// This is a fake collection address. In a real scenario, this would be the address of the product's collection address.
-const collectionAddress = '0x979013fa9be5acc6d31bf0c067c9677e9ea12864';
-
 async function main() {
-    const bgt = await prisma.currency.upsert({
+    const ethCurrency = await prisma.currency.upsert({
         where: { name: 'ETH' },
         update: {},
         create: {
@@ -19,55 +13,59 @@ async function main() {
         }
     });
 
-    const productId1 = 'vi7age4ku18qynwbk4wx90ge';
-
     await prisma.product.upsert({
-        where: { id: productId1 },
+        where: { id: 'vi7age4ku18qynwbk4wx90ge' },
         update: {},
         create: {
-            id: productId1,
-            collectionAddress: collectionAddress,
-            contractType: 'ERC721',
+            id: 'vi7age4ku18qynwbk4wx90ge',
+            name: 'Shark',
+            description: 'Evo Shark NFTs',
+            image: 'https://zacharycouchman.github.io/bb-example-metadata/tokens/Wil_BBH_HeroIcon_1.webp',
             stockQuantity: 5000,
+            status: 'active',
+            collectionAddress: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
+            contractType: 'ERC721',
             productPrices: {
                 create: [
                     {
-                        currency_name: bgt.name,
-                        amount: 1
-                    }
-                ]
-            }
-        }
-    })
-
-    const productId2 = 'jtwrclpj0v1zab865ne893hb';
+                        currency_name: ethCurrency.name,
+                        amount: 1,
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.product.upsert({
-        where: { id: productId2 },
+        where: { id: 'jtwrclpj0v1zab865ne893hb' },
         update: {},
         create: {
-            id: productId2,
-            collectionAddress: collectionAddress,
-            contractType: 'ERC721',
+            id: 'jtwrclpj0v1zab865ne893hb',
+            name: 'Another Product',
+            description: 'Another NFT skin',
+            image: 'https://example.com/another-image.webp',
             stockQuantity: 50,
+            status: 'active',
+            collectionAddress: '0x979013fa9be5acc6d31bf0c067c9677e9ea12864',
+            contractType: 'ERC721',
             productPrices: {
                 create: [
                     {
-                        currency_name: bgt.name,
-                        amount: 1
+                        currency_name: ethCurrency.name,
+                        amount: 1,
                     },
-                ]
-            }
-        }
-    })
+                ],
+            },
+        },
+    });
 }
 
 main()
     .then(async () => {
-        await prisma.$disconnect()
+        await prisma.$disconnect();
     })
     .catch(async (e) => {
-        console.error(e)
-        await prisma.$disconnect()
-        process.exit(1)
-    })
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+    });
