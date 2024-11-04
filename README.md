@@ -32,10 +32,13 @@ The sample code provided is for reference purposes only and is not officially su
 3. **Update the `config.ts` file:**
    In `src/config.ts`, set up the required parameters.
 
+4. **Update Prisma Configs:**
+   In `prisma/seed.ts`, set up the required product and currency parameters.
+   Run `yarn tsc prisma/seed.ts --outDir ./prisma/compiled` to compile the script into js. 
+
 4. **Run Prisma migrations:**
-   ```bash
-   yarn prisma migrate dev
-   ```
+   Run `npx prisma migrate dev --name init` to initialise the database.
+   For web deployments you will need to deploy and configure Postgres
 
 5. **Seed your database:**
    Use a tool like [DB Browser for SQLite](https://sqlitebrowser.org/) to populate your database, or use the Prisma client to write a script for loading allowlisted addresses.
@@ -101,14 +104,15 @@ The sample code provided is for reference purposes only and is not officially su
    }'
    ```
 
-## Test Scripts
+## Local Test Scripts
 
 1. **End-to-End Flow Test:**
    Tests the full flow from product reservation to confirmation.
 
    **To run:**
    ```bash
-   yarn testEndToEnd
+   yarn tsc test/testEndToEnd.ts --outDir ./test/compiled
+   node test/testEndToEnd.js
    ```
 
 2. **Expiration Flow Test:**
@@ -116,24 +120,12 @@ The sample code provided is for reference purposes only and is not officially su
 
    **To run:**
    ```bash
-   yarn testExpire
+   yarn tsc test/testExpire.ts --outDir ./test/compiled
+   node test/compiled/testExpire.js
    ```
 
-## Seeding and Migration
-
-1. **Running Database Migrations:**
-   Use Prisma for managing your database schema.
-
-   ```bash
-   yarn prisma migrate dev
-   ```
-
-2. **Seeding the Database:**
-   You can seed your database either manually using a tool like [SQLite Browser](https://sqlitebrowser.org/) or by writing a custom script to load data through the Prisma client.
-
-## Frontend (Work in Progress)
-
-The frontend for this project is still under development and currently acts as a placeholder. It will be updated in future releases.
+## Frontend
+The front end is generic enough to fit any config. It will automatically query the products endpoint. 
 
 ## Tech Stack
 
@@ -144,8 +136,9 @@ The frontend for this project is still under development and currently acts as a
 
 ## To-Do List
 
-- [ ] Add frontend UI for viewing products and completing purchases.
-- [ ] 
+- [ ] Postgress Vercel guide
+- [ ] Running TS files without compiling step
+- [ ] Steps for demo
 
 
 ## License

@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+/prisma/migrations
+/compiled
+/prisma/compiled
 /.pnp
 .pnp.js
 .yarn/install-state.gz

@@ -70,7 +70,7 @@ export default function Home() {
           <Heading mb={4}>Primary Sale</Heading>
           <Flex px={4} pb={4} justifyContent={'center'} flexWrap={'wrap'} overflowY={'auto'}>
             {loading && <Spinner />}
-            <SimpleGrid width={'100%'} minChildWidth={'330px'} gap={2}>
+            <SimpleGrid minChildWidth={'330px'} gap={2}>
               {
                 !loading && products.length > 0 && products.map((product) => {
                 console.log('Rendering product:', product); // Log each product to ensure it's iterating

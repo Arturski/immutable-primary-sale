@@ -23,7 +23,7 @@ async function main() {
             image: 'https://raw.githubusercontent.com/Arturski/public-static/main/immutable-zkevm-primary-sales/images/nfts/2.webp',
             stockQuantity: 10000,
             status: 'active',
-            collectionAddress: '0x4ba8a1fac42eeac306c987524758786ce3d51931',
+            collectionAddress: '0x9e162ebe516e082f5024a3f43be8215dd7b23199',
             contractType: 'ERC721',
             productPrices: {
                 create: [
