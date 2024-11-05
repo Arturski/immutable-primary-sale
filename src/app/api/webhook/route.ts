@@ -1,7 +1,6 @@
-// src/app/api/quote/route.ts
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import { QuoteResponse, ProductResponse, Pricing } from '@/types'; // Assuming these are defined in src/types
+import { QuoteResponse, ProductResponse, Pricing } from '@/types';
 
 const prisma = new PrismaClient();
 
@@ -10,7 +9,10 @@ export async function POST(request: NextRequest) {
     // Parse the request body
     const { products } = await request.json();
 
-    // Define the response and currency totals with explicit types
+    if (!products || products.length === 0) {
+      return NextResponse.json({ error: 'No products provided' }, { status: 400 });
+    }
+
     const response: QuoteResponse = {
       products: [],
       totals: [],
@@ -21,9 +23,14 @@ export async function POST(request: NextRequest) {
     for (const product of products) {
       const { product_id, quantity } = product;
 
+      // Ensure product_id is treated as a string
+      if (typeof product_id !== 'string') {
+        return NextResponse.json({ error: `Invalid product ID format: ${product_id}` }, { status: 400 });
+      }
+
       const productData = await prisma.product.findUnique({
-        where: { id: parseInt(product_id.toString()) },
-        include: { pricing: true },
+        where: { id: product_id }, // Prisma expects the ID to be a string
+        include: { productPrices: { include: { currency: true } } }, // Corrected field to productPrices with currency include
       });
 
       if (!productData) {
@@ -36,29 +43,32 @@ export async function POST(request: NextRequest) {
         pricing: [],
       };
 
-      for (const price of productData.pricing) {
+      for (const price of productData.productPrices) {
+        if (!price.currency || !price.currency.type) {
+          console.error(`Currency or currency type missing for product ${product_id}`);
+          continue; // Skip if currency data is missing
+        }
+
         const totalAmount = price.amount * quantity;
 
         productResponse.pricing.push({
-          currency: price.currency,
-          currency_type: price.currency_type,
-          currency_address: price.currency_address,
-          amount: totalAmount,
+          currency: price.currency_name,
+          currency_type: price.currency.type,
+          amount: totalAmount
         });
 
-        if (!currencyTotals[price.currency]) {
-          currencyTotals[price.currency] = {
-            currency: price.currency,
-            currency_type: price.currency_type,
-            currency_address: price.currency_address,
+        if (!currencyTotals[price.currency_name]) {
+          currencyTotals[price.currency_name] = {
+            currency: price.currency_name,
+            currency_type: price.currency.type,
             amount: 0,
           };
         }
 
-        currencyTotals[price.currency].amount += totalAmount;
+        currencyTotals[price.currency_name].amount += totalAmount;
       }
 
-      response.products.push(productResponse); // This now works because of the proper typing
+      response.products.push(productResponse);
     }
 
     response.totals = Object.values(currencyTotals);
