@@ -10,7 +10,7 @@ const serverConfig: ServerConfig = {
   [config.Environment.SANDBOX]: {
     HOST_IP: process.env.NEXT_PUBLIC_SANDBOX_HOST_IP!,
     PORT: parseInt(process.env.NEXT_PUBLIC_SANDBOX_PORT!, 10),
-    INVENTORY_API_KEY: process.env.NEXT_PUBLIC_INVENTORY_API_KEY!,
+    INVENTORY_API_KEY: process.env.NEXT_PRIVATE_INVENTORY_API_KEY!,
     RESERVATION_TIME: process.env.NEXT_PUBLIC_RESERVATION_TIME!,
     enableFileLogging: true, // Should logs be output to files or just console?
     logLevel: "debug",
@@ -20,7 +20,7 @@ const serverConfig: ServerConfig = {
   [config.Environment.PRODUCTION]: {
     HOST_IP: process.env.NEXT_PUBLIC_MAINNET_HOST_IP!,
     PORT: parseInt(process.env.NEXT_PUBLIC_MAINNET_PORT!, 10),
-    INVENTORY_API_KEY: process.env.NEXT_PUBLIC_INVENTORY_API_KEY!,
+    INVENTORY_API_KEY: process.env.NEXT_PRIVATE_INVENTORY_API_KEY!,
     RESERVATION_TIME: process.env.NEXT_PUBLIC_RESERVATION_TIME!,
     enableFileLogging: true, // Should logs be output to files or just console?
     logLevel: "debug",
