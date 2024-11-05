@@ -28,7 +28,6 @@ export interface QuoteRequest {
 export interface Pricing {
   currency: string;
   currency_type: string;
-  currency_address: string | null;
   amount: number;
 }
 

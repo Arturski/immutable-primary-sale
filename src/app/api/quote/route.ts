@@ -54,15 +54,13 @@ export async function POST(request: NextRequest) {
         productResponse.pricing.push({
           currency: price.currency_name,
           currency_type: price.currency.type,
-          currency_address: price.currency.currency_address ?? '', // Handle optional field
-          amount: totalAmount,
+          amount: totalAmount
         });
 
         if (!currencyTotals[price.currency_name]) {
           currencyTotals[price.currency_name] = {
             currency: price.currency_name,
             currency_type: price.currency.type,
-            currency_address: price.currency.currency_address ?? '',
             amount: 0,
           };
         }
