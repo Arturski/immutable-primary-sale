@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthorizeRequest, AuthorizeResponse } from '@/types'; // Import necessary types
 import { ApiError } from '@/errors';
@@ -6,7 +6,7 @@ import { ApiError } from '@/errors';
 const prisma = new PrismaClient();
 
 const createOrder = async (recipientAddress: string, orderProducts: any[]) => {
-  return await prisma.$transaction(async (tx: PrismaClient) => { // Add type for 'tx'
+  return await prisma.$transaction(async (tx: Prisma.TransactionClient) => { // Add type for 'tx'
     const updatedProducts = [];
 
     for (const orderProduct of orderProducts) {
