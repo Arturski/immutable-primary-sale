@@ -6,7 +6,7 @@ import { AppHeaderBar } from './components/AppHeaderBar/AppHeaderBar';
 import { EIP1193ContextProvider } from './contexts/EIP1193Context';
 import { CheckoutProvider } from './contexts/CheckoutContext';
 import { checkoutInstance } from './immutable/checkout';
-import { SimpleProduct } from './types/simpleProduct';
+import { SimpleProduct } from '@/types';
 import { SaleCard } from './components/SaleCard/SaleCard';
 import config, { applicationEnvironment } from './config/config';
 

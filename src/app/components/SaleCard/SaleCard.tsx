@@ -4,7 +4,7 @@ import { EIP1193Context } from "../../contexts/EIP1193Context";
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { SaleWidgetParams, WidgetType } from "@imtbl/sdk/checkout";
 import config, { applicationEnvironment } from "../../config/config";
-import { SimpleProduct } from "../../types/simpleProduct";
+import { SimpleProduct } from "@/types";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 
 interface SaleCard {

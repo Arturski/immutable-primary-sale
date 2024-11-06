@@ -1,5 +1,5 @@
 import { config } from "@imtbl/sdk";
-import { ServerConfig } from "./types";
+import { ServerConfig } from "@/types";
 
 // Access environment variables using process.env
 export const environment = process.env.NEXT_PUBLIC_ENVIRONMENT === "PRODUCTION"
