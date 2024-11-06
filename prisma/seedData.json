@@ -1,0 +1,27 @@
+{
+    "currencies": [
+      {
+        "name": "ETH",
+        "type": "crypto"
+      }
+    ],
+    "products": [
+      {
+        "id": "vi7age4ku18qynwbk4wx90ge",
+        "name": "Shark",
+        "description": "Evo Shark NFTs",
+        "image": "https://raw.githubusercontent.com/Arturski/public-static/main/immutable-zkevm-primary-sales/images/nfts/2.webp",
+        "stockQuantity": 10000,
+        "status": "active",
+        "collectionAddress": "0x9e162ebe516e082f5024a3f43be8215dd7b23199",
+        "contractType": "ERC721",
+        "productPrices": [
+          {
+            "currency_name": "ETH",
+            "amount": 0.01
+          }
+        ]
+      }
+    ]
+  }
+  

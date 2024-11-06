@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -38,47 +49,51 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 require("dotenv/config");
+var fs = require("fs");
 var prisma = new client_1.PrismaClient();
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var ethCurrency;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, prisma.currency.upsert({
-                        where: { name: 'ETH' },
-                        update: {},
-                        create: {
-                            name: 'ETH',
-                            type: 'crypto'
-                        }
-                    })];
+        var seedData, _i, _a, currency, _b, _c, product;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    seedData = JSON.parse(fs.readFileSync('seedData.json', 'utf-8'));
+                    _i = 0, _a = seedData.currencies;
+                    _d.label = 1;
                 case 1:
-                    ethCurrency = _a.sent();
-                    return [4 /*yield*/, prisma.product.upsert({
-                            where: { id: 'vi7age4ku18qynwbk4wx90ge' },
+                    if (!(_i < _a.length)) return [3 /*break*/, 4];
+                    currency = _a[_i];
+                    return [4 /*yield*/, prisma.currency.upsert({
+                            where: { name: currency.name },
                             update: {},
-                            create: {
-                                id: 'vi7age4ku18qynwbk4wx90ge',
-                                name: 'Shark',
-                                description: 'Evo Shark NFTs',
-                                image: 'https://raw.githubusercontent.com/Arturski/public-static/main/immutable-zkevm-primary-sales/images/nfts/2.webp',
-                                stockQuantity: 10000,
-                                status: 'active',
-                                collectionAddress: '0x4ba8a1fac42eeac306c987524758786ce3d51931',
-                                contractType: 'ERC721',
-                                productPrices: {
-                                    create: [
-                                        {
-                                            currency_name: ethCurrency.name,
-                                            amount: 0.01,
-                                        },
-                                    ],
-                                },
-                            },
+                            create: currency
                         })];
                 case 2:
-                    _a.sent();
-                    return [2 /*return*/];
+                    _d.sent();
+                    _d.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4:
+                    _b = 0, _c = seedData.products;
+                    _d.label = 5;
+                case 5:
+                    if (!(_b < _c.length)) return [3 /*break*/, 8];
+                    product = _c[_b];
+                    return [4 /*yield*/, prisma.product.upsert({
+                            where: { id: product.id },
+                            update: {},
+                            create: __assign(__assign({}, product), { productPrices: {
+                                    create: product.productPrices
+                                } })
+                        })];
+                case 6:
+                    _d.sent();
+                    _d.label = 7;
+                case 7:
+                    _b++;
+                    return [3 /*break*/, 5];
+                case 8: return [2 /*return*/];
             }
         });
     });

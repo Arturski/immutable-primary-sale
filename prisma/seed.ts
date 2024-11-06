@@ -1,63 +1,35 @@
 import { PrismaClient } from "@prisma/client";
 import 'dotenv/config';
+import * as fs from 'fs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    const ethCurrency = await prisma.currency.upsert({
-        where: { name: 'ETH' },
-        update: {},
-        create: {
-            name: 'ETH',
-            type: 'crypto'
-        }
-    });
+    // Load data from JSON file
+    const seedData = JSON.parse(fs.readFileSync('seedData.json', 'utf-8'));
 
-    await prisma.product.upsert({
-        where: { id: 'vi7age4ku18qynwbk4wx90ge' },
-        update: {},
-        create: {
-            id: 'vi7age4ku18qynwbk4wx90ge',
-            name: 'Shark',
-            description: 'Evo Shark NFTs',
-            image: 'https://raw.githubusercontent.com/Arturski/public-static/main/immutable-zkevm-primary-sales/images/nfts/2.webp',
-            stockQuantity: 10000,
-            status: 'active',
-            collectionAddress: '0x9e162ebe516e082f5024a3f43be8215dd7b23199',
-            contractType: 'ERC721',
-            productPrices: {
-                create: [
-                    {
-                        currency_name: ethCurrency.name,
-                        amount: 0.01,
-                    },
-                ],
-            },
-        },
-    });
+    // Upsert currencies
+    for (const currency of seedData.currencies) {
+        await prisma.currency.upsert({
+            where: { name: currency.name },
+            update: {},
+            create: currency
+        });
+    }
 
-    // await prisma.product.upsert({
-    //     where: { id: 'jtwrclpj0v1zab865ne893hb' },
-    //     update: {},
-    //     create: {
-    //         id: 'jtwrclpj0v1zab865ne893hb',
-    //         name: 'Another Product',
-    //         description: 'Another NFT skin',
-    //         image: 'https://example.com/another-image.webp',
-    //         stockQuantity: 50,
-    //         status: 'active',
-    //         collectionAddress: '0x4ba8a1fac42eeac306c987524758786ce3d51931',
-    //         contractType: 'ERC721',
-    //         productPrices: {
-    //             create: [
-    //                 {
-    //                     currency_name: ethCurrency.name,
-    //                     amount: 1,
-    //                 },
-    //             ],
-    //         },
-    //     },
-    // });
+    // Upsert products
+    for (const product of seedData.products) {
+        await prisma.product.upsert({
+            where: { id: product.id },
+            update: {},
+            create: {
+                ...product,
+                productPrices: {
+                    create: product.productPrices
+                }
+            }
+        });
+    }
 }
 
 main()
