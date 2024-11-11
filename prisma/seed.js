@@ -54,11 +54,12 @@ var path = require("path");
 var prisma = new client_1.PrismaClient();
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var seedData, _i, _a, currency, _b, _c, product;
+        var seedDataPath, seedData, _i, _a, currency, _b, _c, product;
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
-                    seedData = JSON.parse(fs.readFileSync(path.join(__dirname, 'seedData.json'), 'utf-8'));
+                    seedDataPath = path.join(__dirname, 'seedData.json');
+                    seedData = JSON.parse(fs.readFileSync(seedDataPath, 'utf-8'));
                     _i = 0, _a = seedData.currencies;
                     _d.label = 1;
                 case 1:
