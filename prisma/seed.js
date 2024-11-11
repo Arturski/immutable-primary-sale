@@ -50,6 +50,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 require("dotenv/config");
 var fs = require("fs");
+var path = require("path");
 var prisma = new client_1.PrismaClient();
 function main() {
     return __awaiter(this, void 0, void 0, function () {
@@ -57,7 +58,7 @@ function main() {
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
-                    seedData = JSON.parse(fs.readFileSync('seedData.json', 'utf-8'));
+                    seedData = JSON.parse(fs.readFileSync(path.join(__dirname, 'seedData.json'), 'utf-8'));
                     _i = 0, _a = seedData.currencies;
                     _d.label = 1;
                 case 1:
@@ -84,7 +85,10 @@ function main() {
                             where: { id: product.id },
                             update: {},
                             create: __assign(__assign({}, product), { productPrices: {
-                                    create: product.productPrices
+                                    create: product.productPrices.map(function (price) { return ({
+                                        currency_name: price.currency_name,
+                                        amount: price.amount
+                                    }); })
                                 } })
                         })];
                 case 6:

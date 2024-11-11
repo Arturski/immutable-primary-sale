@@ -1,12 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import 'dotenv/config';
 import * as fs from 'fs';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
 
 async function main() {
     // Load data from JSON file
-    const seedData = JSON.parse(fs.readFileSync('seedData.json', 'utf-8'));
+    const seedData = JSON.parse(fs.readFileSync(path.join(__dirname, 'seedData.json'), 'utf-8'));
 
     // Upsert currencies
     for (const currency of seedData.currencies) {
@@ -25,7 +26,10 @@ async function main() {
             create: {
                 ...product,
                 productPrices: {
-                    create: product.productPrices
+                    create: product.productPrices.map((price) => ({
+                        currency_name: price.currency_name,
+                        amount: price.amount
+                    }))
                 }
             }
         });
