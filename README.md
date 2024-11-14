@@ -142,7 +142,7 @@ For more guidance on deploying Next.js and Prisma with Vercel Postgres, refer to
 
 Vercel CLI docs - https://vercel.com/docs/cli
 
-
+Sort deployment video here https://www.loom.com/share/e0552c5d104d4f0ba66f0987a715aac9 
 
 ## Tech Stack  
 
