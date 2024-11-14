@@ -17,61 +17,48 @@ The sample code provided is for reference purposes only and is not officially su
 
 ## Deployment on Vercel  
 
-1. **Provision the Database on Vercel**:  
-   - Create a Postgres database through Vercel's dashboard.  
-   - Copy the database credentials (host, user, password, etc.) and use them in the environment variables.  
+1. **Deploy Github Project Vercel**:  
+   - Go to Vercel dashboard, Add Project and link to this repo or your own fork
+   - Add Environment Variables for the app from .env.example
+   - Add `npx prisma generate && next build` to the build settings, replacing the default
+   - Deploy the project
 
-2. **Configure Environment Variables**:  
-   - Set the following environment variables on Vercel (under **Settings** > **Environment Variables**).  
-   - Use the `DATABASE_` prefix as required by your app configuration:  
-     ```plaintext  
-     DATABASE_URL=postgres://<user>:<password>@<host>/<database>?sslmode=require  
-     NEXT_PUBLIC_SANDBOX_IMMUTABLE_PUBLISHABLE_KEY=your_sandbox_immutable_publishable_key  
-     NEXT_PUBLIC_SANDBOX_PASSPORT_CLIENT_ID=your_sandbox_passport_client_id  
-     NEXT_PUBLIC_SANDBOX_PASSPORT_LOGIN_REDIRECT_URI=https://your-vercel-site.com/redirect  
-     NEXT_PUBLIC_SANDBOX_PASSPORT_LOGOUT_REDIRECT_URI=https://your-vercel-site.com/logout  
-     NEXT_PUBLIC_HUB_ENVIRONMENT_ID="32aff30c-852e-***"  
-     ```  
-   - Replace `<user>`, `<password>`, `<host>`, and `<database>` with your actual database credentials.  
+2. **Provision the Database on Vercel**:  
+   - Create a Postgres database through Vercel's dashboard.
+   - Use the `DATABASE_` prefix as required by your app configuration
+   - Connect to the project you just deployed via UI
+   - Project and Database are now connected
 
-3. **Local Setup Instructions**
+3. **Setup local environment**:  
+   - Install and configure Vercel CLI on your local environment and link it to your account. https://vercel.com/docs/cli
+   - Run `vercel link`, go through the step process in order to connect local cli to remote project
+   - Run `vercel env pull .env` to pull down the complete set of environemnt variables
+   - Your local project can now communicate with the remote database
 
-   1. **Copy the example environment file and configure it:**  
-      ```bash  
-      cp .env.example .env  
-      ```  
+4. **Configure and Seed the database**:
+   - Run `npx prisma db push`, to push the local schema to the remote db
+   - Update the `seedData.json` file with the intended product data, ensure the contract address is correct
+   - Run `npx prisma db seed`, to push the products and currencies to the database
 
-      Update `.env` with your Vercel database configuration and API keys.  
+**Local Setup Instructions**
+
+   1. **Update the local env file to the relevant values:**  
+      - Update `.env` with local values such as URLs PORTs
+      - Do not change the DATABASE envs
+
+   2. **Update Passport Conifg**:
+      - Go to https://hub.immutable.com
+      - Configure passport URLs
 
    2. **Install dependencies**:  
       ```bash  
       yarn  
       ```  
 
-   3. **Update the `config.ts` file**:  
-      Set up the required parameters in `src/config.ts`.  
-
-   4. **Run Prisma migrations**:  
-      Push the Prisma schema to Vercel:  
-      ```bash  
-      npx prisma db push  
-      ```  
-
-   5. **Seed the Database**:  
-      Before running the seed script, update the `seedData` with the required product and currency data in `prisma/seed.ts`. Then, seed the database:  
-      ```bash  
-      npx prisma db seed  
-      ```  
-
-4. **Start the Development Server**:  
-   ```bash  
-   yarn dev  
-   ```  
-
-5. **Use ngrok to test the full experience locally**:  
-   ```bash  
-   ngrok http --url=your-ngrok-url.ngrok-free.app 3000
-   ```  
+   3. **Install ngrep**:  
+      - Use `ngrep` to start a local https service
+      - Everyone gets a free static URL for free
+      - `ngrok http --url=champion-egret-current.ngrok-free.app 3000`
 
 ## Endpoints  
 
@@ -151,7 +138,11 @@ The sample code provided is for reference purposes only and is not officially su
 
 ## Helpful Links  
 
-For more guidance on deploying Next.js and Prisma with Vercel Postgres, refer to the [Vercel Guide](https://vercel.com/guides/nextjs-prisma-postgres).  
+For more guidance on deploying Next.js and Prisma with Vercel Postgres, refer to the [Vercel Guide](https://vercel.com/guides/nextjs-prisma-postgres). 
+
+Vercel CLI docs - https://vercel.com/docs/cli
+
+
 
 ## Tech Stack  
 

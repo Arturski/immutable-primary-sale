@@ -15,11 +15,11 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@imtbl/sdk": "^1.60.0",
-    "@prisma/client": "^5.21.1",
+    "@prisma/client": "5.22.0",
     "@vercel/postgres": "^0.10.0",
     "framer-motion": "^11.11.9",
     "next": "14.2.15",
-    "prisma": "^5.21.1",
+    "prisma": "5.22.0",
     "react": "^18",
     "react-dom": "^18"
   },
