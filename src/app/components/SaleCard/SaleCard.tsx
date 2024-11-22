@@ -6,7 +6,7 @@ import { SaleWidgetParams, WidgetType } from "@imtbl/sdk/checkout";
 import config, { applicationEnvironment } from "../../config/config";
 import { SimpleProduct } from "@/types";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { TokenETH } from "@web3icons/react";
+import { TokenIcon } from "@web3icons/react";
 
 interface SaleCard {
   product: SimpleProduct;
@@ -58,8 +58,7 @@ export function SaleCard({product}: SaleCard) {
           <Flex width={'100%'} justifyContent={'space-between'}>
             <Heading size="sm">{product.name}</Heading>
             <HStack minW={15}>
-              <ChakraImage src={"https://checkout-cdn.sandbox.immutable.com/v1/blob/img/tokens/0x3b2d8a1931736fc321c24864bceee981b11c3c57.svg"} height={6} />
-              <TokenETH size={50} color="#627EEA" />
+              <TokenIcon symbol="eth" variant="mono" size={50} color="#627EEA" />
               <Text fontWeight={'bold'}>{`${product.pricing[0].amount}`}</Text> {/**${product.pricing[0].currency} */}
             </HStack>
           </Flex>
