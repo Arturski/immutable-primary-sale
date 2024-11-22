@@ -58,7 +58,7 @@ export function SaleCard({product}: SaleCard) {
           <Flex width={'100%'} justifyContent={'space-between'}>
             <Heading size="sm">{product.name}</Heading>
             <HStack minW={15}>
-              <TokenIcon symbol="eth" variant="mono" size={50} color="#627EEA" />
+              <TokenIcon symbol="eth" variant="mono" size={20} color="#627EEA" />
               <Text fontWeight={'bold'}>{`${product.pricing[0].amount}`}</Text> {/**${product.pricing[0].currency} */}
             </HStack>
           </Flex>
