@@ -1,6 +1,10 @@
 # Immutable Primary Sale Backend
 
-This project is a backend API for conducting primary sales on IMX zkEVM, enabling product reservations, authorization, and final sale confirmation. It integrates with the Immutable zkEVM for transaction management, nonce handling, and reliable minting.
+A backend API for conducting primary sales on Immutable zkEVM, enabling product reservations, authorization, and final sale confirmation. It integrates with Immutable zkEVM for transaction management, nonce handling, and reliable minting.
+
+**Live API:** https://immutable-primary-sale.vercel.app · **Walkthrough:** [Loom video](https://www.loom.com/share/e0552c5d104d4f0ba66f0987a715aac9)
+
+**Stack:** Next.js · Prisma ORM · Vercel Postgres · Immutable zkEVM SDK · Winston
 
 ## Disclaimer
 
@@ -32,7 +36,7 @@ The sample code provided is for reference purposes only and is not officially su
 3. **Setup local environment**:  
    - Install and configure Vercel CLI on your local environment and link it to your account. https://vercel.com/docs/cli
    - Run `vercel link`, go through the step process in order to connect local cli to remote project
-   - Run `vercel env pull .env` to pull down the complete set of environemnt variables
+   - Run `vercel env pull .env` to pull down the complete set of environment variables
    - Your local project can now communicate with the remote database
 
 4. **Configure and Seed the database**:
@@ -46,19 +50,19 @@ The sample code provided is for reference purposes only and is not officially su
       - Update `.env` with local values such as URLs PORTs
       - Do not change the DATABASE envs
 
-   2. **Update Passport Conifg**:
+   2. **Update Passport config**:
       - Go to https://hub.immutable.com
-      - Configure passport URLs
+      - Configure Passport URLs
 
-   2. **Install dependencies**:  
+   3. **Install dependencies**:  
       ```bash  
       yarn  
       ```  
 
-   3. **Install ngrep**:  
-      - Use `ngrep` to start a local https service
-      - Everyone gets a free static URL for free
-      - `ngrok http --url=champion-egret-current.ngrok-free.app 3000`
+   4. **Expose a local HTTPS endpoint with ngrok**:  
+      - Use [`ngrok`](https://ngrok.com) to start a local HTTPS tunnel (needed for Passport redirects and webhooks)
+      - A free ngrok account gives you a static URL
+      - `ngrok http --url=your-static-subdomain.ngrok-free.app 3000`
 
 ## Endpoints  
 
@@ -142,7 +146,7 @@ For more guidance on deploying Next.js and Prisma with Vercel Postgres, refer to
 
 Vercel CLI docs - https://vercel.com/docs/cli
 
-Sort deployment video here https://www.loom.com/share/e0552c5d104d4f0ba66f0987a715aac9 
+Deployment walkthrough video: https://www.loom.com/share/e0552c5d104d4f0ba66f0987a715aac9 
 
 ## Tech Stack  
 
