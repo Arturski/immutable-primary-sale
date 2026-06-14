@@ -14,7 +14,7 @@
     "@chakra-ui/react": "^2.10.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@imtbl/sdk": "^1.60.0",
+    "@imtbl/sdk": "1.78.11",
     "@prisma/client": "5.22.0",
     "@vercel/postgres": "^0.10.0",
     "@web3icons/react": "^3.12.0",
